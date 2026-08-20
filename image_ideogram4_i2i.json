@@ -1,0 +1,920 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "revision": 0,
+  "last_node_id": 0,
+  "last_link_id": 42,
+  "nodes": [
+    {
+      "id": "load_image",
+      "type": "LoadImage",
+      "pos": [
+        100,
+        130
+      ],
+      "size": [
+        282.798828125,
+        102
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            22,
+            33
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load source image (use dims that are multiples of 16, 256-2048)",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": "image_size",
+      "type": "GetImageSize",
+      "pos": [
+        482.798828125,
+        130
+      ],
+      "size": [
+        140,
+        66
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            30
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            31
+          ]
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Get image size",
+      "properties": {
+        "Node name for S&R": "GetImageSize"
+      }
+    },
+    {
+      "id": "unet",
+      "type": "UNETLoader",
+      "pos": [
+        100,
+        362
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "title": "Ideogram 4 (conditional)",
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "ideogram4_fp8_scaled.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": "unet_uncond",
+      "type": "UNETLoader",
+      "pos": [
+        100,
+        574
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "title": "Ideogram 4 (unconditional, for asymmetric CFG)",
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "ideogram4_unconditional_fp8_scaled.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": "clip",
+      "type": "CLIPLoader",
+      "pos": [
+        100,
+        786
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "Qwen3-VL text encoder",
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen3vl_8b_fp8_scaled.safetensors",
+        "ideogram4",
+        "default"
+      ]
+    },
+    {
+      "id": "vae",
+      "type": "VAELoader",
+      "pos": [
+        100,
+        1022
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            34,
+            41
+          ]
+        }
+      ],
+      "title": "VAE",
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "flux2-vae.safetensors"
+      ]
+    },
+    {
+      "id": "caption",
+      "type": "CLIPTextEncode",
+      "pos": [
+        482.798828125,
+        562
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            24,
+            27
+          ]
+        }
+      ],
+      "title": "Edit caption (JSON)",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "{\n  \"high_level_description\": \"DESCRIBE THE EDITED IMAGE HERE — describe the whole target scene, not just the change\",\n  \"style\": {\n    \"medium\": \"photograph\",\n    \"lighting\": \"warm golden hour sidelight\",\n    \"mood\": \"serene\"\n  }\n}"
+      ]
+    },
+    {
+      "id": "caption_zero",
+      "type": "ConditioningZeroOut",
+      "pos": [
+        982.798828125,
+        414
+      ],
+      "size": [
+        204.134765625,
+        26
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "title": "Zeroed cond for uncond pass",
+      "properties": {
+        "Node name for S&R": "ConditioningZeroOut"
+      }
+    },
+    {
+      "id": "cfg_override",
+      "type": "CFGOverride",
+      "pos": [
+        482.798828125,
+        326
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "CFG 3 for last 30% of trajectory",
+      "properties": {
+        "Node name for S&R": "CFGOverride"
+      },
+      "widgets_values": [
+        3,
+        0.7,
+        1
+      ]
+    },
+    {
+      "id": "guider",
+      "type": "DualModelGuider",
+      "pos": [
+        1352.798828125,
+        338
+      ],
+      "size": [
+        270,
+        118
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 26
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 27
+        },
+        {
+          "name": "model_negative",
+          "shape": 7,
+          "type": "MODEL",
+          "link": 28
+        },
+        {
+          "name": "negative",
+          "shape": 7,
+          "type": "CONDITIONING",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            36
+          ]
+        }
+      ],
+      "title": "Asymmetric CFG guider",
+      "properties": {
+        "Node name for S&R": "DualModelGuider"
+      },
+      "widgets_values": [
+        7
+      ]
+    },
+    {
+      "id": "sigmas_full",
+      "type": "Ideogram4Scheduler",
+      "pos": [
+        982.798828125,
+        130
+      ],
+      "size": [
+        270,
+        154
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 30
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "title": "Logit-normal schedule (Default preset)",
+      "properties": {
+        "Node name for S&R": "Ideogram4Scheduler"
+      },
+      "widgets_values": [
+        20,
+        1024,
+        1024,
+        0,
+        1.75
+      ]
+    },
+    {
+      "id": "sigmas_split",
+      "type": "SplitSigmasDenoise",
+      "pos": [
+        1352.798828125,
+        130
+      ],
+      "size": [
+        270,
+        78
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "high_sigmas",
+          "type": "SIGMAS",
+          "links": null
+        },
+        {
+          "name": "low_sigmas",
+          "type": "SIGMAS",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "SDEdit strength: 0.4 subtle restyle, 0.55-0.75 semantic edit, >0.8 loose",
+      "properties": {
+        "Node name for S&R": "SplitSigmasDenoise"
+      },
+      "widgets_values": [
+        0.65
+      ]
+    },
+    {
+      "id": "encode",
+      "type": "VAEEncode",
+      "pos": [
+        482.798828125,
+        892
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 33
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "Encode source to latent",
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": "noise",
+      "type": "RandomNoise",
+      "pos": [
+        100,
+        1210
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "Noise",
+      "properties": {
+        "Node name for S&R": "RandomNoise"
+      },
+      "widgets_values": [
+        42,
+        "randomize"
+      ]
+    },
+    {
+      "id": "euler",
+      "type": "KSamplerSelect",
+      "pos": [
+        100,
+        1422
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "title": "Euler",
+      "properties": {
+        "Node name for S&R": "KSamplerSelect"
+      },
+      "widgets_values": [
+        "euler"
+      ]
+    },
+    {
+      "id": "sample",
+      "type": "SamplerCustomAdvanced",
+      "pos": [
+        1722.798828125,
+        130
+      ],
+      "size": [
+        212.3638671875,
+        106
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 35
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 36
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 37
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 38
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            40
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": null
+        }
+      ],
+      "title": "Sample (low_sigmas = SDEdit)",
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced"
+      }
+    },
+    {
+      "id": "decode",
+      "type": "VAEDecode",
+      "pos": [
+        2035.1626953125,
+        130
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 40
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "title": "Decode",
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": "save",
+      "type": "SaveImage",
+      "pos": [
+        2275.1626953125,
+        130
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Save",
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "ideogram4_sdedit"
+      ]
+    }
+  ],
+  "links": [
+    [
+      22,
+      "load_image",
+      0,
+      "image_size",
+      0,
+      "IMAGE"
+    ],
+    [
+      23,
+      "clip",
+      0,
+      "caption",
+      0,
+      "CLIP"
+    ],
+    [
+      24,
+      "caption",
+      0,
+      "caption_zero",
+      0,
+      "CONDITIONING"
+    ],
+    [
+      25,
+      "unet",
+      0,
+      "cfg_override",
+      0,
+      "MODEL"
+    ],
+    [
+      26,
+      "cfg_override",
+      0,
+      "guider",
+      0,
+      "MODEL"
+    ],
+    [
+      27,
+      "caption",
+      0,
+      "guider",
+      1,
+      "CONDITIONING"
+    ],
+    [
+      28,
+      "unet_uncond",
+      0,
+      "guider",
+      2,
+      "MODEL"
+    ],
+    [
+      29,
+      "caption_zero",
+      0,
+      "guider",
+      3,
+      "CONDITIONING"
+    ],
+    [
+      30,
+      "image_size",
+      0,
+      "sigmas_full",
+      0,
+      "INT"
+    ],
+    [
+      31,
+      "image_size",
+      1,
+      "sigmas_full",
+      1,
+      "INT"
+    ],
+    [
+      32,
+      "sigmas_full",
+      0,
+      "sigmas_split",
+      0,
+      "SIGMAS"
+    ],
+    [
+      33,
+      "load_image",
+      0,
+      "encode",
+      0,
+      "IMAGE"
+    ],
+    [
+      34,
+      "vae",
+      0,
+      "encode",
+      1,
+      "VAE"
+    ],
+    [
+      35,
+      "noise",
+      0,
+      "sample",
+      0,
+      "NOISE"
+    ],
+    [
+      36,
+      "guider",
+      0,
+      "sample",
+      1,
+      "GUIDER"
+    ],
+    [
+      37,
+      "euler",
+      0,
+      "sample",
+      2,
+      "SAMPLER"
+    ],
+    [
+      38,
+      "sigmas_split",
+      1,
+      "sample",
+      3,
+      "SIGMAS"
+    ],
+    [
+      39,
+      "encode",
+      0,
+      "sample",
+      4,
+      "LATENT"
+    ],
+    [
+      40,
+      "sample",
+      0,
+      "decode",
+      0,
+      "LATENT"
+    ],
+    [
+      41,
+      "vae",
+      0,
+      "decode",
+      1,
+      "VAE"
+    ],
+    [
+      42,
+      "decode",
+      0,
+      "save",
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6933856632575333,
+      "offset": [
+        752.6329637024255,
+        -104.34026237745215
+      ]
+    },
+    "frontendVersion": "1.47.12",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

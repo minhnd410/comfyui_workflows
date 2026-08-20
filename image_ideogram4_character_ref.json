@@ -1,0 +1,1210 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "revision": 0,
+  "last_node_id": 0,
+  "last_link_id": 52,
+  "nodes": [
+    {
+      "id": "load_ref",
+      "type": "LoadImage",
+      "pos": [
+        100,
+        130
+      ],
+      "size": [
+        282.798828125,
+        102
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load CHARACTER REFERENCE (full body works best)",
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": "scale_ref",
+      "type": "ImageScale",
+      "pos": [
+        482.798828125,
+        130
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "title": "Fit reference to left panel (1024x1024)",
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "lanczos",
+        1024,
+        1024,
+        "center"
+      ]
+    },
+    {
+      "id": "canvas_bg",
+      "type": "EmptyImage",
+      "pos": [
+        100,
+        362
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "title": "Gray diptych canvas 2048x1024",
+      "properties": {
+        "Node name for S&R": "EmptyImage"
+      },
+      "widgets_values": [
+        2048,
+        1024,
+        1,
+        8421504
+      ]
+    },
+    {
+      "id": "canvas",
+      "type": "ImageCompositeMasked",
+      "pos": [
+        982.798828125,
+        130
+      ],
+      "size": [
+        271.64609375,
+        146
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "destination",
+          "type": "IMAGE",
+          "link": 28
+        },
+        {
+          "name": "source",
+          "type": "IMAGE",
+          "link": 29
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "Paste reference on left half",
+      "properties": {
+        "Node name for S&R": "ImageCompositeMasked"
+      },
+      "widgets_values": [
+        0,
+        0,
+        false
+      ]
+    },
+    {
+      "id": "mask_canvas",
+      "type": "SolidMask",
+      "pos": [
+        100,
+        622
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "title": "Mask canvas (0 = locked)",
+      "properties": {
+        "Node name for S&R": "SolidMask"
+      },
+      "widgets_values": [
+        0,
+        2048,
+        1024
+      ]
+    },
+    {
+      "id": "mask_right",
+      "type": "SolidMask",
+      "pos": [
+        100,
+        858
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Right half = generate",
+      "properties": {
+        "Node name for S&R": "SolidMask"
+      },
+      "widgets_values": [
+        1,
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": "mask",
+      "type": "MaskComposite",
+      "pos": [
+        482.798828125,
+        390
+      ],
+      "size": [
+        270,
+        126
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "destination",
+          "type": "MASK",
+          "link": 30
+        },
+        {
+          "name": "source",
+          "type": "MASK",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "title": "Reference locked, right half free",
+      "properties": {
+        "Node name for S&R": "MaskComposite"
+      },
+      "widgets_values": [
+        1024,
+        0,
+        "add"
+      ]
+    },
+    {
+      "id": "unet",
+      "type": "UNETLoader",
+      "pos": [
+        100,
+        1094
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "title": "Ideogram 4 (conditional)",
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "ideogram4_fp8_scaled.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": "unet_uncond",
+      "type": "UNETLoader",
+      "pos": [
+        100,
+        1306
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "title": "Ideogram 4 (unconditional, for asymmetric CFG)",
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "ideogram4_unconditional_fp8_scaled.safetensors",
+        "default"
+      ]
+    },
+    {
+      "id": "clip",
+      "type": "CLIPLoader",
+      "pos": [
+        100,
+        1518
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "title": "Qwen3-VL text encoder",
+      "properties": {
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "qwen3vl_8b_fp8_scaled.safetensors",
+        "ideogram4",
+        "default"
+      ]
+    },
+    {
+      "id": "vae",
+      "type": "VAELoader",
+      "pos": [
+        100,
+        1754
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            40,
+            49
+          ]
+        }
+      ],
+      "title": "VAE",
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "flux2-vae.safetensors"
+      ]
+    },
+    {
+      "id": "caption",
+      "type": "CLIPTextEncode",
+      "pos": [
+        482.798828125,
+        882
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            33,
+            36
+          ]
+        }
+      ],
+      "title": "Diptych caption — describe character ONCE in detail, reuse verbatim in both elements; set outfit hexes in both palettes",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "{\n  \"high_level_description\": \"A two-panel diptych: two photographs of the exact same person wearing the identical outfit. She is DESCRIBE CHARACTER + OUTFIT IN DETAIL. Left panel: full-body studio reference photo, standing, plain gray background. Right panel: the very same person, same face, same hair, same outfit, DESCRIBE NEW SCENE / POSE / ACTION\",\n  \"style_description\": {\n    \"aesthetics\": \"clean, natural, true-to-life\",\n    \"lighting\": \"soft diffused daylight\",\n    \"photo\": \"full-body portrait\",\n    \"medium\": \"photograph\"\n  },\n  \"compositional_deconstruction\": {\n    \"background\": \"left half: plain light gray studio backdrop; right half: DESCRIBE NEW SCENE BACKGROUND\",\n    \"elements\": [\n      {\n        \"type\": \"obj\",\n        \"bbox\": [40, 140, 980, 360],\n        \"desc\": \"CHARACTER + OUTFIT, standing, studio reference\",\n        \"color_palette\": [\"#2A9D8F\", \"#D4A017\", \"#FFFFFF\", \"#1F3D2B\", \"#C0392B\"]\n      },\n      {\n        \"type\": \"obj\",\n        \"bbox\": [180, 560, 920, 940],\n        \"desc\": \"the exact same person: CHARACTER + OUTFIT, identical face and outfit, DOING THE NEW ACTION\",\n        \"color_palette\": [\"#2A9D8F\", \"#D4A017\", \"#FFFFFF\", \"#1F3D2B\", \"#C0392B\"]\n      }\n    ]\n  }\n}"
+      ]
+    },
+    {
+      "id": "caption_zero",
+      "type": "ConditioningZeroOut",
+      "pos": [
+        982.798828125,
+        406
+      ],
+      "size": [
+        204.134765625,
+        26
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "Zeroed cond for uncond pass",
+      "properties": {
+        "Node name for S&R": "ConditioningZeroOut"
+      }
+    },
+    {
+      "id": "cfg_override",
+      "type": "CFGOverride",
+      "pos": [
+        482.798828125,
+        646
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "CFG 3 for last 30% of trajectory",
+      "properties": {
+        "Node name for S&R": "CFGOverride"
+      },
+      "widgets_values": [
+        3,
+        0.7,
+        1
+      ]
+    },
+    {
+      "id": "guider",
+      "type": "DualModelGuider",
+      "pos": [
+        1354.444921875,
+        306
+      ],
+      "size": [
+        270,
+        118
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 35
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 36
+        },
+        {
+          "name": "model_negative",
+          "shape": 7,
+          "type": "MODEL",
+          "link": 37
+        },
+        {
+          "name": "negative",
+          "shape": 7,
+          "type": "CONDITIONING",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GUIDER",
+          "type": "GUIDER",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "title": "Asymmetric CFG guider",
+      "properties": {
+        "Node name for S&R": "DualModelGuider"
+      },
+      "widgets_values": [
+        7
+      ]
+    },
+    {
+      "id": "sigmas",
+      "type": "Ideogram4Scheduler",
+      "pos": [
+        100,
+        1942
+      ],
+      "size": [
+        270,
+        154
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            46
+          ]
+        }
+      ],
+      "title": "Logit-normal schedule, full denoise (diptych canvas size)",
+      "properties": {
+        "Node name for S&R": "Ideogram4Scheduler"
+      },
+      "widgets_values": [
+        20,
+        2048,
+        1024,
+        0,
+        1.75
+      ]
+    },
+    {
+      "id": "encode",
+      "type": "VAEEncode",
+      "pos": [
+        1354.444921875,
+        130
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 39
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "title": "Encode canvas",
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": "masked_latent",
+      "type": "SetLatentNoiseMask",
+      "pos": [
+        1724.444921875,
+        130
+      ],
+      "size": [
+        188.1373046875,
+        46
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 41
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "Reference panel locked every step",
+      "properties": {
+        "Node name for S&R": "SetLatentNoiseMask"
+      }
+    },
+    {
+      "id": "noise",
+      "type": "RandomNoise",
+      "pos": [
+        100,
+        2226
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "NOISE",
+          "type": "NOISE",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "title": "Noise — vary seed for different takes of the right panel",
+      "properties": {
+        "Node name for S&R": "RandomNoise"
+      },
+      "widgets_values": [
+        555,
+        "randomize"
+      ]
+    },
+    {
+      "id": "euler",
+      "type": "KSamplerSelect",
+      "pos": [
+        100,
+        2438
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "SAMPLER",
+          "type": "SAMPLER",
+          "links": [
+            45
+          ]
+        }
+      ],
+      "title": "Euler",
+      "properties": {
+        "Node name for S&R": "KSamplerSelect"
+      },
+      "widgets_values": [
+        "euler"
+      ]
+    },
+    {
+      "id": "sample",
+      "type": "SamplerCustomAdvanced",
+      "pos": [
+        2012.5822265625002,
+        130
+      ],
+      "size": [
+        212.3638671875,
+        106
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "noise",
+          "type": "NOISE",
+          "link": 43
+        },
+        {
+          "name": "guider",
+          "type": "GUIDER",
+          "link": 44
+        },
+        {
+          "name": "sampler",
+          "type": "SAMPLER",
+          "link": 45
+        },
+        {
+          "name": "sigmas",
+          "type": "SIGMAS",
+          "link": 46
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            48
+          ]
+        },
+        {
+          "name": "denoised_output",
+          "type": "LATENT",
+          "links": null
+        }
+      ],
+      "title": "Sample",
+      "properties": {
+        "Node name for S&R": "SamplerCustomAdvanced"
+      }
+    },
+    {
+      "id": "decode",
+      "type": "VAEDecode",
+      "pos": [
+        2324.9460937500003,
+        130
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 48
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            50,
+            51
+          ]
+        }
+      ],
+      "title": "Decode",
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": "save_diptych",
+      "type": "SaveImage",
+      "pos": [
+        2564.9460937500003,
+        130
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Save full diptych (for checking)",
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "charref_diptych"
+      ]
+    },
+    {
+      "id": "crop_result",
+      "type": "ImageCrop",
+      "pos": [
+        2564.9460937500003,
+        318
+      ],
+      "size": [
+        281.7154296875,
+        130
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 51
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            52
+          ]
+        }
+      ],
+      "title": "Crop generated right panel",
+      "properties": {
+        "Node name for S&R": "ImageCrop"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1024,
+        0
+      ]
+    },
+    {
+      "id": "save_result",
+      "type": "SaveImage",
+      "pos": [
+        2946.6615234375004,
+        130
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Save final result",
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "charref_result"
+      ]
+    }
+  ],
+  "links": [
+    [
+      27,
+      "load_ref",
+      0,
+      "scale_ref",
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
+      "canvas_bg",
+      0,
+      "canvas",
+      0,
+      "IMAGE"
+    ],
+    [
+      29,
+      "scale_ref",
+      0,
+      "canvas",
+      1,
+      "IMAGE"
+    ],
+    [
+      30,
+      "mask_canvas",
+      0,
+      "mask",
+      0,
+      "MASK"
+    ],
+    [
+      31,
+      "mask_right",
+      0,
+      "mask",
+      1,
+      "MASK"
+    ],
+    [
+      32,
+      "clip",
+      0,
+      "caption",
+      0,
+      "CLIP"
+    ],
+    [
+      33,
+      "caption",
+      0,
+      "caption_zero",
+      0,
+      "CONDITIONING"
+    ],
+    [
+      34,
+      "unet",
+      0,
+      "cfg_override",
+      0,
+      "MODEL"
+    ],
+    [
+      35,
+      "cfg_override",
+      0,
+      "guider",
+      0,
+      "MODEL"
+    ],
+    [
+      36,
+      "caption",
+      0,
+      "guider",
+      1,
+      "CONDITIONING"
+    ],
+    [
+      37,
+      "unet_uncond",
+      0,
+      "guider",
+      2,
+      "MODEL"
+    ],
+    [
+      38,
+      "caption_zero",
+      0,
+      "guider",
+      3,
+      "CONDITIONING"
+    ],
+    [
+      39,
+      "canvas",
+      0,
+      "encode",
+      0,
+      "IMAGE"
+    ],
+    [
+      40,
+      "vae",
+      0,
+      "encode",
+      1,
+      "VAE"
+    ],
+    [
+      41,
+      "encode",
+      0,
+      "masked_latent",
+      0,
+      "LATENT"
+    ],
+    [
+      42,
+      "mask",
+      0,
+      "masked_latent",
+      1,
+      "MASK"
+    ],
+    [
+      43,
+      "noise",
+      0,
+      "sample",
+      0,
+      "NOISE"
+    ],
+    [
+      44,
+      "guider",
+      0,
+      "sample",
+      1,
+      "GUIDER"
+    ],
+    [
+      45,
+      "euler",
+      0,
+      "sample",
+      2,
+      "SAMPLER"
+    ],
+    [
+      46,
+      "sigmas",
+      0,
+      "sample",
+      3,
+      "SIGMAS"
+    ],
+    [
+      47,
+      "masked_latent",
+      0,
+      "sample",
+      4,
+      "LATENT"
+    ],
+    [
+      48,
+      "sample",
+      0,
+      "decode",
+      0,
+      "LATENT"
+    ],
+    [
+      49,
+      "vae",
+      0,
+      "decode",
+      1,
+      "VAE"
+    ],
+    [
+      50,
+      "decode",
+      0,
+      "save_diptych",
+      0,
+      "IMAGE"
+    ],
+    [
+      51,
+      "decode",
+      0,
+      "crop_result",
+      0,
+      "IMAGE"
+    ],
+    [
+      52,
+      "crop_result",
+      0,
+      "save_result",
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6933856632575333,
+      "offset": [
+        752.6329637024255,
+        -104.34026237745215
+      ]
+    },
+    "frontendVersion": "1.47.12",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}
